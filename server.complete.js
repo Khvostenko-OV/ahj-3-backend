@@ -1,10 +1,10 @@
 const http = require('http');
-const path = require('path');
-const fs = require('fs');
+//const path = require('path');
+//const fs = require('fs');
 const Koa = require('koa');
-const koaBody = require('koa-body');
-const koaStatic = require('koa-static');
-const uuid = require('uuid');
+//const koaBody = require('koa-body');
+//const koaStatic = require('koa-static');
+//const uuid = require('uuid');
 const app = new Koa();
 
 // => Static file handling

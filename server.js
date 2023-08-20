@@ -53,11 +53,11 @@ app.use(koaBody({
 app.use(async ctx => {
     const qs = querystring.parse(ctx.request.querystring);
     const { name, description, status } = ctx.request.body;
-    console.log(qs.method, ctx.request.body)
+    console.log(`${qs.method}, id=${qs.id}, body=`, ctx.request.body);
 
     switch (qs.method) {
         case 'allTickets':
-          ctx.response.body = tickets;
+          ctx.response.body = tickets.filter(item => { return item !== null && item !== undefined });
           return;
 
         case 'ticketById':
@@ -72,14 +72,16 @@ app.use(async ctx => {
 
         case 'createTicket':
           if (name) {
-            tickets[ticketId] = {
+            const ticket = {
               'id': ticketId,
               'name': name,
               'status': Boolean(status),
               'created': new Date()
-            }
+            };
+            tickets[ticketId] = ticket;
             descriptions[ticketId] = description || '';
-            ctx.response.body = tickets[ticketId++]
+            ticket.description = descriptions[ticketId++];
+            ctx.response.body = ticket;
             ctx.response.status = 201;
           } else {
             ctx.response.status = 400;
@@ -88,14 +90,16 @@ app.use(async ctx => {
 
         case 'patchTicket':
           if (qs.id && tickets[qs.id]) {
-            tickets[qs.id].name = name || tickets[qs.id].name;
+            const ticket = tickets[qs.id];
+            ticket.name = name || ticket.name;
             if (status !== undefined) {
-              tickets[qs.id].status = (status == 'false') ? false : true; 
+              ticket.status = (status == 'false') ? false : true; 
             }
             if (description !== undefined) {
               descriptions[qs.id] = description;
             }
-            ctx.response.body = tickets[qs.id];
+            ticket.description = descriptions[qs.id];
+            ctx.response.body = ticket;
             ctx.response.status = 200;
           } else {
             ctx.response.status = 404;
